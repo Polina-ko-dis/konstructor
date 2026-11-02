@@ -1,0 +1,22 @@
+{
+  "name": "prototype",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/prepare-sites-build.mjs",
+    "preview": "vite preview",
+    "test:sites": "node --test tests/sites-worker.test.mjs"
+  },
+  "dependencies": {
+    "@reactor/reactor": "^0.0.226",
+    "@reactor/table": "^0.0.154",
+    "@vitejs/plugin-react": "5.0.4",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "sass-embedded": "^1.105.1",
+    "vite": "6.4.2"
+  }
+}
