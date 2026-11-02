@@ -13,4 +13,7 @@ const initial=[{name:'Питание',pic:'food',ids:services.filter(s=>s.group=
 
 const sectionPresets=['Питание','СПА и развлечения','Трансфер','Развлечения','Завтраки','Рестораны и бары','Баня и сауна','Бассейн','Спорт и фитнес','Прокат','Экскурсии','Для детей','Для питомцев','Парковка','Подарки','Романтика','Деловые услуги','Мастер-классы','Прогулки на природе','Хранение багажа'];
 
-export {groups,services,pictures,initial,sectionPresets};
+// Recommended pairs: a section suggests its first icon, an icon suggests its first free section.
+const iconSections={food:['Питание','Завтраки'],bathhouse:['Баня и сауна'],spa:['СПА и развлечения'],tennis:['Спорт и фитнес'],rollers:['Прокат'],serving:['Завтраки','Питание'],romantic:['Романтика'],restaurant:['Рестораны и бары'],treatment:['СПА и развлечения'],pool:['Бассейн'],transfer:['Трансфер'],pets:['Для питомцев'],luggage:['Хранение багажа'],location:['Экскурсии','Прогулки на природе'],gift:['Подарки'],kids:['Для детей'],minibar:['Рестораны и бары'],parking:['Парковка'],bbq:['Прогулки на природе'],popular:['Развлечения']};
+const iconsForSection=section=>pictures.map(([id])=>id).filter(id=>iconSections[id]?.includes(section));
+export {groups,services,pictures,initial,sectionPresets,iconSections,iconsForSection};
