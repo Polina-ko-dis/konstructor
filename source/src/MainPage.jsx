@@ -3,7 +3,7 @@ import {Text,PageTop,Button,Icon,Switch,Tile,TileHeader,Link,Badge,InfoDialogWin
 import {Table} from '@reactor/table';
 import {services} from './data';
 import ServiceDetails from './ServiceDetails';
-import StorefrontLink,{storefrontUrl} from './StorefrontLink';
+import StorefrontLink,{ShareLinkDialog,storefrontUrl} from './StorefrontLink';
 import AddToSectionDialog from './AddToSectionDialog';
 
 // serviceId links a feed entry to the catalog used by sections; the arrays stay separate demo data.
@@ -14,12 +14,13 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
  const [details,setDetails]=useState(null);
  const [deleting,setDeleting]=useState(null);
  const [adding,setAdding]=useState(null);
+ const [sharing,setSharing]=useState(null);
  if(noServices)return <main className="page"><PageTop title="Настройки показа"/><Tile decoration={["services-load-error-tile"]}><div className="no-services-state" role="status"><Icon name="room-service" size="md" color="neutral"/><Text text="Нет подключённых услуг" typography="block-title"/><Text text="Пока к витрине не подключено ни одной услуги. После подключения они появятся на этой странице."/></div></Tile></main>;
  if(loadError)return <main className="page"><PageTop title="Настройки показа"/><Tile decoration={["services-load-error-tile"]}><div className="services-load-error" role="alert"><Icon name="block" size="xl" color="danger"/><div className="services-load-error-copy"><Text text="Не удалось загрузить страницу" typography="section-title"/><Text text="Обновите страницу. Если ошибка повторится, обратитесь в техподдержку."/><div><Button text="Обновить страницу" onClick={()=>window.location.reload()}/></div></div></div></Tile></main>;
  const sectionHint="Скроет раздел с витрины. Привязанные к нему услуги останутся видны в ленте";
  const serviceHint="Скроет услугу только из ленты. В разделах она останется видна гостям";
  const copyLink=async(param,name,success)=>{try{await navigator.clipboard.writeText(storefrontUrl+'?'+param+'='+encodeURIComponent(name));onNotify(success)}catch{onNotify('Не удалось скопировать ссылку','danger')}};
- const copyDisabledHint=section=>sections.length<2?'Ссылка появится, когда разделов будет минимум 2':section.visible?undefined:'Раздел скрыт с витрины. Включите видимость, чтобы скопировать ссылку';
+ const copyDisabledHint=section=>sections.length<2?'Ссылка появится, когда разделов будет минимум 2':section.visible?undefined:'Раздел скрыт с витрины. Включите видимость, чтобы получить ссылку';
  const serviceCopyDisabledHint=service=>service.visible||(sections.length>=2&&sections.some(s=>s.visible&&s.ids.includes(service.serviceId)))?undefined:'Услуга скрыта с витрины. Включите видимость, чтобы скопировать ссылку';
  const addDisabledHint=service=>sections.length===0?'Сначала создайте раздел':sections.every(s=>s.ids.includes(service.serviceId))?'Услуга уже есть во всех разделах':undefined;
  const addToSections=(service,targets)=>{setSections(prev=>prev.map(s=>targets.includes(s.name)?{...s,ids:[...s.ids,service.serviceId]}:s));setAdding(null);onNotify((targets.length>1?'Услуга добавлена в разделы: ':'Услуга добавлена в раздел ')+targets.map(name=>'«'+name+'»').join(', '))};
@@ -32,7 +33,7 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
       <Switch hint={sectionHint} accent={s.visible} selected={s.visible} onClick={()=>{setSections(prev=>prev.map((v,j)=>i===j?{...v,visible:!v.visible}:v));onSaved()}}/>,
       <Link text={s.name} onClick={()=>onEdit(s,i)}/>,
       <Badge color="info" filled text={String(s.ids.length)} hint={{html:true,text:services.filter(service=>s.ids.includes(service.id)).map(service=>"<p>"+service.name.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")+"</p>").join("")||"Нет привязанных услуг"}}/>,
-      {content:<ActionMenu actions={[{icon:"edit",text:"Редактировать",onClick:()=>onEdit(s,i)},{icon:"copy",text:"Копировать ссылку на раздел",onClick:()=>{copyLink('section',s.name,'Ссылка на раздел скопирована')},disabled:Boolean(copyDisabledHint(s)),disabledHint:copyDisabledHint(s)},{icon:"delete",text:"Удалить",onClick:()=>setDeleting(s)}]}/>,hAlign:'right'}
+      {content:<ActionMenu actions={[{icon:"edit",text:"Редактировать",onClick:()=>onEdit(s,i)},{icon:"link",text:"Получить ссылку и QR-code",onClick:()=>setSharing(s),disabled:Boolean(copyDisabledHint(s)),disabledHint:copyDisabledHint(s)},{icon:"delete",text:"Удалить",onClick:()=>setDeleting(s)}]}/>,hAlign:'right'}
     ]}))}/>}</>
    </Tile></div>
    <div className="main-tile feed-tile"><Tile header={title('Лента всех услуг','Общий порядок карточек при обычном скролле витрины')}>
@@ -44,6 +45,7 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
    </Tile></div>
   </main>
   <WarningDialogWindow header="Удалить раздел?" state={[deleting!==null,v=>{if(!v)setDeleting(null)}]} actions={{primary:{text:'Удалить',onClick:()=>{setSections(prev=>prev.filter(s=>s!==deleting));setDeleting(null);onSaved()}},cancel:{text:'Отмена'}}}><Text text={'Раздел «'+(deleting?.name??'')+'» будет удалён. Привязанные услуги останутся в каталоге и ленте.'}/></WarningDialogWindow>
+  {sharing&&<ShareLinkDialog open setOpen={v=>{if(!v)setSharing(null)}} url={storefrontUrl+'?section='+encodeURIComponent(sharing.name)} header="Поделиться разделом" description={'Отправьте ссылку гостям или разместите её на сайте. По ней откроется витрина с услугами раздела «'+sharing.name+'».'} qrTitle="QR-код раздела" qrDescription="Разместите его там, где услуги раздела будут особенно полезны, — гости смогут открыть их с телефона." linkLabel="Ссылка на раздел" qrAlt="QR-код ссылки на раздел" fileName="section-qr.png"/>}
   {adding&&<AddToSectionDialog key={adding.id} service={adding} sections={sections} onClose={()=>setAdding(null)} onConfirm={targets=>addToSections(adding,targets)}/>}
   {details&&<ServiceDetails key={details.id} service={details} onClose={()=>setDetails(null)} onSave={updated=>{setFeed(prev=>prev.map(s=>s.id===updated.id?updated:s));setDetails(updated);onSaved()}}/>}
  </>;
