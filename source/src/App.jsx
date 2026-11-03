@@ -39,7 +39,7 @@ function Prototype(){
   if(link==='icon'&&!fits(id,name)){const suggested=iconSections[id]?.find(value=>sectionOptions.some(o=>o.value===value));if(suggested){setName(suggested);setCustomSection(false);setError('')}}};
  const toggle=id=>setSelected(prev=>prev.includes(id)?prev.filter(v=>v!==id):[...prev,id]);
  const otherSections=sections.filter((_,i)=>i!==edit);
- const sectionOptions=[{value:'',text:'Не выбрано'},...sectionPresets.filter(value=>!otherSections.some(s=>s.name.trim().toLowerCase()===value.toLowerCase())).map(value=>({value,text:value})),{value:CUSTOM_SECTION,text:'Свой раздел'}];
+ const sectionOptions=[{value:'',text:'Не выбрано'},...sectionPresets.filter(value=>!otherSections.some(s=>s.name.trim().toLowerCase()===value.toLowerCase())).map(value=>({value,text:value})),{value:CUSTOM_SECTION,text:'Свое название'}];
  const availablePictures=pictures.filter(([id])=>id===pic||iconsForSection(name).includes(id)||!otherSections.some(s=>s.pic===id));
  const emptySelection=view==='selected'&&selected.length===0;
  const filtered=(view==='selected'?selected.map(id=>services.find(s=>s.id===id)).filter(Boolean):services).filter(s=>(group==='Все группы'||(group==='Без группы'?!s.group?.trim()||s.group==='Без группы':s.group===group))&&s.name.toLowerCase().includes(query.trim().toLowerCase()));
