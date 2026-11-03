@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import {Button,Field,ModalWindow,WindowSize,Text,Separator} from '@reactor/reactor';
+import {Button,Field,ModalWindow,SnackbarWindow,WindowSize,Text,Separator} from '@reactor/reactor';
 
 import QRCode from 'qrcode';
 
@@ -9,6 +9,7 @@ export const storefrontUrl=configuredUrl||'https://example.com/showcase';
 
 export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrDescription,linkLabel,qrAlt,fileName}){
  const [status,setStatus]=useState('');
+ const [copied,setCopied]=useState(false);
  const [copying,setCopying]=useState(false);
  const [qrUrl,setQrUrl]=useState('');
  const [qrPreview,setQrPreview]=useState('');
@@ -16,7 +17,7 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
  useEffect(()=>{
   if(!open)return;
   let active=true;
-  setStatus('');setQrUrl('');setQrPreview('');setQrError(false);
+  setStatus('');setCopied(false);setQrUrl('');setQrPreview('');setQrError(false);
   // Preview without the quiet zone so it lines up with the heading; the PNG keeps it.
   Promise.all([
    QRCode.toDataURL(url,{width:1024,margin:4,errorCorrectionLevel:'M'}),
@@ -37,19 +38,20 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
   setCopying(true);
   try{
    await navigator.clipboard.writeText(url);
-   setStatus('Ссылка скопирована');
+   setStatus('');setCopied(true);
   }catch{
-   setStatus('Не удалось скопировать. Выделите ссылку и скопируйте её вручную.');
+   setCopied(false);setStatus('Не удалось скопировать. Выделите ссылку и скопируйте её вручную.');
   }finally{setCopying(false)}
  }
- return <ModalWindow header={header} size={WindowSize.dialog} state={[open,setOpen]} footer={<Button type="default" text="Закрыть" onClick={()=>setOpen(false)}/>}>
+ return <>
+  <ModalWindow header={header} size={WindowSize.dialog} state={[open,setOpen]} footer={<Button type="default" text="Закрыть" onClick={()=>setOpen(false)}/>}>
    <div className="storefront-link-body">
     <div className="storefront-section">
      <Text text={linkLabel} typography="subtitle"/>
      <Text text={description}/>
     </div>
-    <div className="storefront-copy-row"><Field value={url} onChange={()=>{}} aria-label={linkLabel} onFocus={event=>event.target.select()}/><Button type="link" text={status==='Ссылка скопирована'?'Скопировано':'Скопировать'} disabled={copying} onClick={copy}/></div>
-    {status&&<div role="status"><Text text={status} typography="caption"/></div>}
+    <div className="storefront-copy-row"><Field value={url} onChange={()=>{}} aria-label={linkLabel} onFocus={event=>event.target.select()}/><Button type="link" text="Скопировать" disabled={copying} onClick={copy}/></div>
+    {status&&<div role="alert"><Text text={status} typography="caption" color="danger"/></div>}
     <Separator/>
     <div className="storefront-section">
      <Text text={qrTitle} typography="subtitle"/>
@@ -62,7 +64,9 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
      </div>
     </div>
    </div>
-  </ModalWindow>;
+  </ModalWindow>
+  <SnackbarWindow status="success" text="Ссылка скопирована" state={[copied,setCopied]} close={()=>setCopied(false)}/>
+ </>;
 }
 
 export default function StorefrontLink(){
