@@ -61,3 +61,5 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Copy success in the share dialog: no inline text under the field; show a Reactor SnackbarWindow status="success" «Ссылка скопирована» (top right, above the modal layer). The copy link text always stays «Скопировать». A copy failure stays inline under the field in danger color.
 
 - Section presets, icon ids and section↔icon pairs follow Figma «Для конструктора» (18587:88986): icon file/id = Figma layer name (e.g. Food_Icon_dark), section preset = white caption under the icon; «Без названия» means the icon has no paired section.
+
+- Default modal width is always 600 px. Use this width for all modal dialogs unless the user explicitly requests another width.

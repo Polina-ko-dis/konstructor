@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import {Button,Field,ModalWindow,SnackbarWindow,WindowSize,Text,Separator} from '@reactor/reactor';
+import {Button,Field,ModalWindow,SnackbarWindow,Text,Separator} from '@reactor/reactor';
 
 import QRCode from 'qrcode';
 
@@ -44,18 +44,18 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
   }finally{setCopying(false)}
  }
  return <>
-  <ModalWindow header={header} size={WindowSize.dialog} state={[open,setOpen]} footer={<Button type="default" text="Закрыть" onClick={()=>setOpen(false)}/>}>
+  <ModalWindow header={header} size={()=>({minWidth:600,maxWidth:600})} state={[open,setOpen]} footer={<Button type="default" text="Закрыть" onClick={()=>setOpen(false)}/>}>
    <div className="storefront-link-body">
     <div className="storefront-section">
      <Text text={linkLabel} typography="subtitle"/>
-     <Text text={description}/>
+     {description&&<Text text={description}/>}
     </div>
     <div className="storefront-copy-row"><Field value={url} onChange={()=>{}} aria-label={linkLabel} onFocus={event=>event.target.select()}/><Button type="link" text="Скопировать" disabled={copying} onClick={copy}/></div>
     {status&&<div role="alert"><Text text={status} typography="caption" color="danger"/></div>}
     <Separator/>
     <div className="storefront-section">
      <Text text={qrTitle} typography="subtitle"/>
-     <Text text={qrDescription}/>
+     {qrDescription&&<Text text={qrDescription}/>}
     </div>
     <div className="storefront-qr-row">
      {qrPreview&&<img className="storefront-qr-preview" src={qrPreview} alt={qrAlt} width="128" height="128"/>}
@@ -73,6 +73,6 @@ export default function StorefrontLink(){
  const [open,setOpen]=useState(false);
  return <>
   <Button text="Поделиться витриной" onClick={()=>setOpen(true)}/>
-  <ShareLinkDialog open={open} setOpen={setOpen} url={storefrontUrl} header="Поделиться витриной" description="Отправьте ссылку гостям или разместите её на сайте. По ней откроется вся витрина услуг." qrTitle="QR-код витрины" qrDescription="Разместите его на стойке регистрации или в номере — гости смогут открыть витрину с телефона." linkLabel="Ссылка на витрину" qrAlt="QR-код ссылки на витрину" fileName="storefront-qr.png"/>
+  <ShareLinkDialog open={open} setOpen={setOpen} url={storefrontUrl} header="Поделиться витриной"  qrTitle="QR-код для стойки и номеров"  linkLabel="Ссылка для сайта и чатов" qrAlt="QR-код ссылки на витрину" fileName="storefront-qr.png"/>
  </>;
 }
