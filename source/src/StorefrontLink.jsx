@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import {Button,Field,InfoDialogWindow,Text,Separator} from '@reactor/reactor';
+import {Button,Field,ModalWindow,WindowSize,Text,Separator} from '@reactor/reactor';
 
 import QRCode from 'qrcode';
 
@@ -11,13 +11,18 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
  const [status,setStatus]=useState('');
  const [copying,setCopying]=useState(false);
  const [qrUrl,setQrUrl]=useState('');
+ const [qrPreview,setQrPreview]=useState('');
  const [qrError,setQrError]=useState(false);
  useEffect(()=>{
   if(!open)return;
   let active=true;
-  setStatus('');setQrUrl('');setQrError(false);
-  QRCode.toDataURL(url,{width:1024,margin:4,errorCorrectionLevel:'M'})
-   .then(url=>{if(active)setQrUrl(url)})
+  setStatus('');setQrUrl('');setQrPreview('');setQrError(false);
+  // Preview without the quiet zone so it lines up with the heading; the PNG keeps it.
+  Promise.all([
+   QRCode.toDataURL(url,{width:1024,margin:4,errorCorrectionLevel:'M'}),
+   QRCode.toDataURL(url,{width:288,margin:0,errorCorrectionLevel:'M'})
+  ])
+   .then(([png,preview])=>{if(active){setQrUrl(png);setQrPreview(preview)}})
    .catch(()=>{if(active)setQrError(true)});
   return()=>{active=false};
  },[open,url]);
@@ -37,23 +42,27 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
    setStatus('Не удалось скопировать. Выделите ссылку и скопируйте её вручную.');
   }finally{setCopying(false)}
  }
- return <InfoDialogWindow header={header} state={[open,setOpen]} footer={<Button type="default" text="Закрыть" onClick={()=>setOpen(false)}/>}>
+ return <ModalWindow header={header} size={WindowSize.dialog} state={[open,setOpen]} footer={<Button type="default" text="Закрыть" onClick={()=>setOpen(false)}/>}>
    <div className="storefront-link-body">
-    <Text text={description}/>
+    <div className="storefront-section">
+     <Text text={linkLabel} typography="subtitle"/>
+     <Text text={description}/>
+    </div>
     <div className="storefront-copy-row"><Field value={url} onChange={()=>{}} aria-label={linkLabel} onFocus={event=>event.target.select()}/><Button type="link" text={status==='Ссылка скопирована'?'Скопировано':'Скопировать'} disabled={copying} onClick={copy}/></div>
     {status&&<div role="status"><Text text={status} typography="caption"/></div>}
     <Separator/>
+    <div className="storefront-section">
+     <Text text={qrTitle} typography="subtitle"/>
+     <Text text={qrDescription}/>
+    </div>
     <div className="storefront-qr-row">
-     {qrUrl&&<img className="storefront-qr-preview" src={qrUrl} alt={qrAlt} width="144" height="144"/>}
+     {qrPreview&&<img className="storefront-qr-preview" src={qrPreview} alt={qrAlt} width="128" height="128"/>}
      <div className="storefront-qr-copy">
-      <Text text={qrTitle} typography="subtitle"/>
-      <Text text={qrDescription}/>
-      {qrError?<div role="alert"><Text text="Не удалось создать QR-код. Закройте окно и попробуйте ещё раз." color="danger"/></div>:<div><Button text="Скачать QR-код" disabled={!qrUrl} onClick={downloadQr}/></div>}
-      <Text text="PNG · 1024 × 1024" typography="caption" color="neutral"/>
+      {qrError?<div role="alert"><Text text="Не удалось создать QR-код. Закройте окно и попробуйте ещё раз." color="danger"/></div>:<div className="storefront-qr-download"><Button type="link" text="Скачать QR-код" disabled={!qrUrl} onClick={downloadQr}/></div>}
      </div>
     </div>
    </div>
-  </InfoDialogWindow>;
+  </ModalWindow>;
 }
 
 export default function StorefrontLink(){

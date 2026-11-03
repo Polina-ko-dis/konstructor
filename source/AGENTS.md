@@ -54,3 +54,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Rename guest sharing link/dialog to «Поделиться витриной». Include a QR preview and «Скачать QR-код» PNG action for the same configured guest URL; generate locally, without third-party QR services.
 
 - «Нет ни одной услуги» replaces main-page tables/actions with a centered neutral service icon, «Нет подключённых услуг» and an explanation that services appear after connection. Based on Figma 1441:10988; distinct from empty sections.
+
+- Share dialog (storefront and section): Reactor ModalWindow at dialog width (600 px), no status icon. Two blocks with subtitle headings — «Ссылка на витрину»/«Ссылка на раздел» above the description and copy row, «QR-код витрины»/«QR-код раздела» left-aligned above its description, then the QR with a link-type «Скачать QR-код» button beside it, aligned to the QR bottom edge. No file format/size caption — there is only one file to download. The QR preview has no quiet zone so it aligns with the heading; the downloaded PNG keeps it.
+
+- Section ↔ icon link in the section sidebar: whichever field the guest sets first leads, and the other follows every change of it (section → its icon; icon → its section). The link breaks only when the guest picks, in the following field, a value unrelated to the leading one; after that both fields change independently. Editing an existing section starts linked (section leads) if its icon matches its section, otherwise unlinked.
