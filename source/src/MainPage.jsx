@@ -47,7 +47,7 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
    </Tile></div>
   </main>
   <WarningDialogWindow header="Удалить раздел?" state={[deleting!==null,v=>{if(!v)setDeleting(null)}]} actions={{primary:{text:'Удалить',onClick:()=>{setSections(prev=>prev.filter(s=>s!==deleting));setDeleting(null);onSaved()}},cancel:{text:'Отмена'}}}><Text text={'Раздел «'+(deleting?.name??'')+'» удалится, но все привязанные к нему услуги останутся видны гостям'}/></WarningDialogWindow>
-  {sharing&&<ShareLinkDialog open setOpen={v=>{if(!v)setSharing(null)}} url={storefrontUrl+'?section='+encodeURIComponent(sharing.name)} header="Поделиться разделом" qrTitle="QR-код для стойки и номеров" linkLabel="Ссылка для сайта и чатов" qrAlt="QR-код ссылки на раздел" fileName="section-qr.png"/>}
+  {sharing&&<ShareLinkDialog open setOpen={v=>{if(!v)setSharing(null)}} url={storefrontUrl+'?section='+encodeURIComponent(sharing.name)} header="Поделиться разделом" description="Отправьте ссылку гостям или разместите её на сайте — по ней откроются услуги раздела" qrTitle="QR-код для печати" qrDescription="Разместите QR-код, например, на стойке регистрации, столиках или в буклетах — гости смогут открыть раздел с телефона" linkLabel="Ссылка" qrAlt="QR-код ссылки на раздел" fileName="section-qr.png"/>}
   {adding&&<AddToSectionDialog key={adding.id} service={adding} sections={sections} onClose={()=>setAdding(null)} onConfirm={targets=>addToSections(adding,targets)}/>}
   {details&&<ServiceDetails key={details.id} service={details} onClose={()=>setDetails(null)} onSave={updated=>{setFeed(prev=>prev.map(s=>s.id===updated.id?updated:s));setDetails(updated);onSaved()}}/>}
  </>;

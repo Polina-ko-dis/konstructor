@@ -21,7 +21,7 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
   // Preview without the quiet zone so it lines up with the heading; the PNG keeps it.
   Promise.all([
    QRCode.toDataURL(url,{width:1024,margin:4,errorCorrectionLevel:'M'}),
-   QRCode.toDataURL(url,{width:288,margin:0,errorCorrectionLevel:'M'})
+   QRCode.toDataURL(url,{width:240,margin:0,errorCorrectionLevel:'M'})
   ])
    .then(([png,preview])=>{if(active){setQrUrl(png);setQrPreview(preview)}})
    .catch(()=>{if(active)setQrError(true)});
@@ -50,7 +50,7 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
      <Text text={linkLabel} typography="subtitle"/>
      {description&&<Text text={description}/>}
     </div>
-    <div className="storefront-copy-row"><Field value={url} onChange={()=>{}} aria-label={linkLabel} onFocus={event=>event.target.select()}/><Button type="link" text="Скопировать" disabled={copying} onClick={copy}/></div>
+    <div className="storefront-copy-row"><Field value={url} onChange={()=>{}} aria-label={linkLabel} onFocus={event=>event.target.select()}/><Button type="link" icon="copy" text="Скопировать" disabled={copying} onClick={copy}/></div>
     {status&&<div role="alert"><Text text={status} typography="caption" color="danger"/></div>}
     <Separator/>
     <div className="storefront-section">
@@ -58,9 +58,9 @@ export function ShareLinkDialog({open,setOpen,url,header,description,qrTitle,qrD
      {qrDescription&&<Text text={qrDescription}/>}
     </div>
     <div className="storefront-qr-row">
-     {qrPreview&&<img className="storefront-qr-preview" src={qrPreview} alt={qrAlt} width="128" height="128"/>}
+     {qrPreview&&<img className="storefront-qr-preview" src={qrPreview} alt={qrAlt} width="80" height="80"/>}
      <div className="storefront-qr-copy">
-      {qrError?<div role="alert"><Text text="Не удалось создать QR-код. Закройте окно и попробуйте ещё раз." color="danger"/></div>:<div className="storefront-qr-download"><Button type="link" text="Скачать QR-код" disabled={!qrUrl} onClick={downloadQr}/></div>}
+      {qrError?<div role="alert"><Text text="Не удалось создать QR-код. Закройте окно и попробуйте ещё раз." color="danger"/></div>:<div className="storefront-qr-download"><Button type="link" icon="download" text="Скачать QR-код" disabled={!qrUrl} onClick={downloadQr}/></div>}
      </div>
     </div>
    </div>
@@ -73,6 +73,6 @@ export default function StorefrontLink(){
  const [open,setOpen]=useState(false);
  return <>
   <Button text="Поделиться витриной" onClick={()=>setOpen(true)}/>
-  <ShareLinkDialog open={open} setOpen={setOpen} url={storefrontUrl} header="Поделиться витриной"  qrTitle="QR-код для стойки и номеров"  linkLabel="Ссылка для сайта и чатов" qrAlt="QR-код ссылки на витрину" fileName="storefront-qr.png"/>
+  <ShareLinkDialog open={open} setOpen={setOpen} url={storefrontUrl} header="Поделиться витриной" description="Отправьте ссылку гостям или разместите её на сайте — по ней откроются услуги витрины" qrTitle="QR-код для печати" qrDescription="Разместите QR-код, например, на стойке регистрации, столиках или в буклетах — гости смогут открыть витрину с телефона" linkLabel="Ссылка" qrAlt="QR-код ссылки на витрину" fileName="storefront-qr.png"/>
  </>;
 }
