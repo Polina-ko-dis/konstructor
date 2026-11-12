@@ -63,3 +63,5 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Section presets, icon ids and section↔icon pairs follow Figma «Для конструктора» (18587:88986): icon file/id = Figma layer name (e.g. Food_Icon_dark), section preset = white caption under the icon; «Без названия» means the icon has no paired section.
 
 - Default modal width is always 600 px. Use this width for all modal dialogs unless the user explicitly requests another width.
+
+- After a successful drag-and-drop reorder in «Разделы» or «Лента всех услуг», show the green success SnackbarWindow «Порядок сортировки изменен». No banner when the drop leaves the order unchanged. Reactor Table has no drop callback, so MainPage detects the row move with a MutationObserver (useReorderNotice).

@@ -20,7 +20,7 @@ export default function ServiceDetails({service,onClose,onSave}){
     <div className="service-detail-row"><Label text="Описание"/>{editing?<Textarea value={description} onChange={setDescription} size="stretch"/>:<Text text={description}/>}</div>
     <div className="service-detail-row"><Label text="Фото"/><div className="service-detail-photos">{[0,1].map(index=><div className="service-detail-photo" key={index}><img src={import.meta.env.BASE_URL+"assets/service-detail-photo.png"} alt={'Фото услуги '+(index+1)}/></div>)}</div></div>
     <Separator/>
-    <div className="service-detail-row"><Label text="Где продаётся"/><div className="service-detail-channels"><Badge color="orange" text="TL:BE"/><Badge color="light-green" text="Витрина"/></div></div>
+    <div className="service-detail-row"><Label text="Где продаётся"/><div className="service-detail-channels"><Badge color="orange" text="TL:BE"/><Badge color="demo" text="TL: Services — Витрина"/></div></div>
    </div>
   </SidebarWindow>
   <WarningDialogWindow header="Сохранить изменения?" state={[confirm,setConfirm]} footer={<div className="unsaved-actions"><Button type="primary" text="Сохранить и закрыть" disabled={!name.trim()} onClick={()=>{onSave({...service,name:name.trim(),description});onClose()}}/><Button text="Не сохранять" onClick={onClose}/></div>}><Text text="В услуге есть несохранённые изменения."/></WarningDialogWindow>

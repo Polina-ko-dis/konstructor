@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect,useRef} from 'react';
 import {Text,PageTop,Button,Icon,Switch,Tile,TileHeader,Link,Badge,InfoDialogWindow,ActionMenu,WarningDialogWindow,WarningAlert} from '@reactor/reactor';
 import {Table} from '@reactor/table';
 import {services} from './data';
@@ -9,7 +9,18 @@ import AddToSectionDialog from './AddToSectionDialog';
 // serviceId links a feed entry to the catalog used by sections; the arrays stay separate demo data.
 const feedItems=[['Завтрак «Шведский стол»','Питание0'],['Вход в термальную зону','Баня и бассейн2'],['Парковка','Трансфер и парковка0'],['Аренда квадроцикла','Спорт и отдых1'],['Обед комплексный','Питание3']];
 
+// Reactor Table has no drop callback: it moves the <tr> nodes itself only when the order really changed.
+// A node removed and re-added in one mutation batch is such a move.
+function useReorderNotice(onReorder){
+ const cb=useRef(onReorder),observer=useRef(null);cb.current=onReorder;
+ useEffect(()=>()=>observer.current?.disconnect(),[]);
+ return useRef(node=>{observer.current?.disconnect();observer.current=null;if(!node)return;
+  observer.current=new MutationObserver(records=>{const removed=new Set(records.flatMap(r=>[...r.removedNodes]));if(records.some(r=>[...r.addedNodes].some(n=>n.nodeName==='TR'&&removed.has(n))))cb.current()});
+  observer.current.observe(node,{childList:true,subtree:true})}).current;
+}
+
 export default function MainPage({noServices=false,loadError=false,sections,setSections,onEdit,onSaved,onNotify}){
+ const sortedNotice=()=>onNotify('Порядок сортировки изменен'),sectionsOrderRef=useReorderNotice(sortedNotice),feedOrderRef=useReorderNotice(sortedNotice);
  const [feed,setFeed]=useState(feedItems.map(([name,serviceId],i)=>({id:String(i),name,serviceId,visible:true})));
  const [details,setDetails]=useState(null);
  const [deleting,setDeleting]=useState(null);
@@ -28,7 +39,7 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
  return <>
   <main className="page">
    <PageTop title="Настройки показа" subtitle={<div className="page-description"><Text text="Задайте структуру и наполнение витрины, чтобы помочь гостям найти нужную услугу" typography="subtitle"/><div className="page-secondary-actions"><StorefrontLink/></div></div>}/>
-   <div className="main-tile sections-tile"><Tile header={title('Разделы','Кнопки навигации для быстрого перехода к предложениям на витрине',sections.length>0&&<Button icon="add" text="Создать раздел" onClick={()=>onEdit()}/>)}>
+   <div className="main-tile sections-tile" ref={sectionsOrderRef}><Tile header={title('Разделы','Кнопки навигации для быстрого перехода к предложениям на витрине',sections.length>0&&<Button icon="add" text="Создать раздел" onClick={()=>onEdit()}/>)}>
     <>{sections.length===1&&<div className="sections-warning" role="status"><WarningAlert
       text="Создайте не меньше 2 разделов, чтобы навигация появилась на витрине"
     /></div>}{sections.length===0?<div className="sections-empty"><Icon name="folder" size="md" color="neutral"/><div className="sections-empty-copy"><Text text="Пока нет разделов" typography="subtitle"/><Text text="Разделы помогают гостям быстрее находить услуги. Чтобы они появились на витрине, создайте минимум 2 раздела" color="foreground"/></div><Button text="Создать раздел" onClick={()=>onEdit()}/></div>:<Table key={JSON.stringify(sections.map(s=>s.name))} width="100%" fixed draggable stickyNoTop head={{key:'sections-head',cells:[{content:'Видимость',width:108},{content:'Раздел',width:'39.23%'},{content:'Привязано услуг'},{content:'Действие',width:193,hAlign:'right'}]}} rows={sections.map((s,i)=>({key:s.name,cells:[
@@ -38,7 +49,7 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
       {content:<ActionMenu actions={[{icon:"edit",text:"Редактировать",onClick:()=>onEdit(s,i)},{icon:"link",text:"Поделиться разделом",onClick:()=>setSharing(s),disabled:Boolean(copyDisabledHint(s)),disabledHint:copyDisabledHint(s)},{icon:"delete",text:"Удалить",onClick:()=>setDeleting(s)}]}/>,hAlign:'right'}
     ]}))}/>}</>
    </Tile></div>
-   <div className="main-tile feed-tile"><Tile header={title('Лента всех услуг','Общий порядок карточек при обычном просмотре витрины')}>
+   <div className="main-tile feed-tile" ref={feedOrderRef}><Tile header={title('Лента всех услуг','Общий порядок карточек при обычном просмотре витрины')}>
     <Table width="100%" fixed draggable stickyNoTop head={{key:'feed-head',cells:[{content:'Видимость',width:108},'Услуга',{content:'Действие',width:193,hAlign:'right'}]}} rows={feed.map(s=>({key:s.id,cells:[
      <Switch hint={serviceHint} accent={s.visible} selected={s.visible} onClick={()=>{setFeed(prev=>prev.map(v=>v.id===s.id?{...v,visible:!v.visible}:v));onSaved()}}/>,
      <Link text={s.name} onClick={()=>setDetails(s)}/>,
