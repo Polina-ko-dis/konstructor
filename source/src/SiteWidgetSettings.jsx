@@ -47,12 +47,11 @@ export default function SiteWidgetSettings({onSaved}){
   selectPosition(positions[index].id);
   event.currentTarget.querySelectorAll('[role="radio"]')[index]?.focus();
  };
- const actions={
-  closeOnPrimary:true,
-  primary:{text:'Сохранить',onClick:()=>{setSettings({...draft});onSaved()}},
-  cancel:{text:'Отмена'}
- };
- return <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} state={[open,changeOpen]} trigger={<Button ref={trigger} type="primary" text="Виджет для сайта"/>} actions={actions}>
+ return <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} state={[open,changeOpen]} trigger={<Button ref={trigger} type="primary" text="Виджет для сайта"/>} footer={({close})=><div className="widget-settings-footer">
+  <Button type="primary" text="Сохранить" onClick={()=>{setSettings({...draft});onSaved();close()}}/>
+  <Button text="Посмотреть на сайте" link={{href:'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'}}/>
+  <Button text="Отмена" onClick={close}/>
+ </div>}>
   <div className="widget-settings-body" ref={body}>
    <InfoAlert text="Цвет и стили виджета будут соответствовать стилям формы бронирования"/>
    <Switch accent={draft.enabled} label="Активация виджета витрины на сайте" aria-label="Активация виджета витрины на сайте" role="switch" aria-checked={draft.enabled} value={draft.enabled} onChange={enabled=>setDraft(value=>({...value,enabled}))}/>
