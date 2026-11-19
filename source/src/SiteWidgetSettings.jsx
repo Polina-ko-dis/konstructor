@@ -54,7 +54,7 @@ export default function SiteWidgetSettings({onSaved}){
  };
  return <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} state={[open,changeOpen]} trigger={<Button ref={trigger} type="primary" text="Виджет для сайта"/>} actions={actions}>
   <div className="widget-settings-body" ref={body}>
-   <InfoAlert text="Цвет иконки будет соответствовать основному цвету формы бронирования."/>
+   <InfoAlert text="Цвет и стили виджета будут соответствовать стилям формы бронирования"/>
    <Switch accent={draft.enabled} label="Активация виджета витрины на сайте" aria-label="Активация виджета витрины на сайте" role="switch" aria-checked={draft.enabled} value={draft.enabled} onChange={enabled=>setDraft(value=>({...value,enabled}))}/>
    <section className="widget-position-section" aria-labelledby="widget-position-heading">
     <div id="widget-position-heading"><Text text="Расположение виджета на сайте" typography="subtitle"/></div>
