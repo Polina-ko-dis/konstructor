@@ -15,5 +15,6 @@ const sectionPresets=['Питание','Банный комплекс','СПА-�
 
 // Recommended pairs (Figma 18587:88986): one section per icon; Equipment2, Other2, Treatment, Changedates and Excursion1 have none.
 const iconSections={Food_Icon_dark:['Питание'],Bathhouse_Icon_dark:['Банный комплекс'],Spa_Icon_dark:['СПА-центр'],Equipment1_Icon_dark:['Активный отдых'],Other1_Icon_dark:['Рум-сервис'],Romantic_Icon_dark:['Для двоих'],Pool2_Icon_dark:['Аквазона'],Transfer_Icon_dark:['Трансфер'],Roomservice_Icon_dark:['Удобства'],Animal_Icon_dark:['Для питомцев'],Excursion2_Icon_dark:['Экскурсии'],Upgrade_Icon_dark:['Улучшить номер'],Gift_Icon_dark:['Сертификаты'],Kid_Icon_dark:['Для детей'],Minibar_Icon_dark:['Мини-бар'],Parking_Icon_dark:['Парковка'],Picnic_Icon_dark:['Гриль-зона'],Popular1_Icon_dark:['Популярное'],Popular2_Icon_dark:['Рекомендуем']};
+const allIconsUsed=pictures.map(([pic,title])=>({name:iconSections[pic]?.[0]||title,pic,ids:[],visible:true}));
 const iconsForSection=section=>pictures.map(([id])=>id).filter(id=>iconSections[id]?.includes(section));
-export {groups,services,pictures,initial,sectionPresets,iconSections,iconsForSection};
+export {groups,services,pictures,initial,allIconsUsed,sectionPresets,iconSections,iconsForSection};

@@ -65,3 +65,5 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Default modal width is always 600 px. Use this width for all modal dialogs unless the user explicitly requests another width.
 
 - After a successful drag-and-drop reorder in «Разделы» or «Лента всех услуг», show the green success SnackbarWindow «Порядок сортировки изменен». No banner when the drop leaves the order unchanged. Reactor Table has no drop callback, so MainPage detects the row move with a MutationObserver (useReorderNotice).
+
+- When all section icons are occupied (including hidden sections), disable «Создать раздел» and show the Reactor disabledHint «Достигнут лимит разделов. Удалите лишний или измените текущий». Preset section names must not reuse occupied icons through automatic pairing. Editing keeps the current icon available. The «Все иконки заняты» prototype variant provides this state for review.

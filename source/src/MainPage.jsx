@@ -19,7 +19,7 @@ function useReorderNotice(onReorder){
   observer.current.observe(node,{childList:true,subtree:true})}).current;
 }
 
-export default function MainPage({noServices=false,loadError=false,sections,setSections,onEdit,onSaved,onNotify}){
+export default function MainPage({noServices=false,loadError=false,sections,setSections,onEdit,onSaved,onNotify,createDisabledHint}){
  const sortedNotice=()=>onNotify('Порядок сортировки изменен'),sectionsOrderRef=useReorderNotice(sortedNotice),feedOrderRef=useReorderNotice(sortedNotice);
  const [feed,setFeed]=useState(feedItems.map(([name,serviceId],i)=>({id:String(i),name,serviceId,visible:true})));
  const [details,setDetails]=useState(null);
@@ -39,10 +39,10 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
  return <>
   <main className="page">
    <PageTop title="Настройки показа" subtitle={<div className="page-description"><Text text="Задайте структуру и наполнение витрины, чтобы помочь гостям найти нужную услугу" typography="subtitle"/><div className="page-secondary-actions"><StorefrontLink/></div></div>}/>
-   <div className="main-tile sections-tile" ref={sectionsOrderRef}><Tile header={title('Разделы','Кнопки навигации для быстрого перехода к предложениям на витрине',sections.length>0&&<Button icon="add" text="Создать раздел" onClick={()=>onEdit()}/>)}>
+   <div className="main-tile sections-tile" ref={sectionsOrderRef}><Tile header={title('Разделы','Кнопки навигации для быстрого перехода к предложениям на витрине',sections.length>0&&<Button icon="add" text="Создать раздел" disabled={Boolean(createDisabledHint)} disabledHint={createDisabledHint} onClick={()=>onEdit()}/>)}>
     <>{sections.length===1&&<div className="sections-warning" role="status"><WarningAlert
       text="Создайте не меньше 2 разделов, чтобы навигация появилась на витрине"
-    /></div>}{sections.length===0?<div className="sections-empty"><Icon name="folder" size="md" color="neutral"/><div className="sections-empty-copy"><Text text="Пока нет разделов" typography="subtitle"/><Text text="Разделы помогают гостям быстрее находить услуги. Чтобы они появились на витрине, создайте минимум 2 раздела" color="foreground"/></div><Button text="Создать раздел" onClick={()=>onEdit()}/></div>:<Table key={JSON.stringify(sections.map(s=>s.name))} width="100%" fixed draggable stickyNoTop head={{key:'sections-head',cells:[{content:'Видимость',width:108},{content:'Раздел',width:'39.23%'},{content:'Привязано услуг'},{content:'Действие',width:193,hAlign:'right'}]}} rows={sections.map((s,i)=>({key:s.name,cells:[
+    /></div>}{sections.length===0?<div className="sections-empty"><Icon name="folder" size="md" color="neutral"/><div className="sections-empty-copy"><Text text="Пока нет разделов" typography="subtitle"/><Text text="Разделы помогают гостям быстрее находить услуги. Чтобы они появились на витрине, создайте минимум 2 раздела" color="foreground"/></div><Button text="Создать раздел" disabled={Boolean(createDisabledHint)} disabledHint={createDisabledHint} onClick={()=>onEdit()}/></div>:<Table key={JSON.stringify(sections.map(s=>s.name))} width="100%" fixed draggable stickyNoTop head={{key:'sections-head',cells:[{content:'Видимость',width:108},{content:'Раздел',width:'39.23%'},{content:'Привязано услуг'},{content:'Действие',width:193,hAlign:'right'}]}} rows={sections.map((s,i)=>({key:s.name,cells:[
       <Switch hint={sectionHint} accent={s.visible} selected={s.visible} onClick={()=>{setSections(prev=>prev.map((v,j)=>i===j?{...v,visible:!v.visible}:v));onSaved()}}/>,
       <Link text={s.name} onClick={()=>onEdit(s,i)}/>,
       <Badge color="info" filled text={String(s.ids.length)} hint={{html:true,text:services.filter(service=>s.ids.includes(service.id)).map(service=>"<p>"+service.name.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")+"</p>").join("")||"Нет привязанных услуг"}}/>,
