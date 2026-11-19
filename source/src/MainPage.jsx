@@ -5,6 +5,7 @@ import {services} from './data';
 import ServiceDetails from './ServiceDetails';
 import StorefrontLink,{ShareLinkDialog,storefrontUrl} from './StorefrontLink';
 import AddToSectionDialog from './AddToSectionDialog';
+import SiteWidgetSettings from './SiteWidgetSettings';
 
 // serviceId links a feed entry to the catalog used by sections; the arrays stay separate demo data.
 const feedItems=[['Завтрак «Шведский стол»','Питание0'],['Вход в термальную зону','Баня и бассейн2'],['Парковка','Трансфер и парковка0'],['Аренда квадроцикла','Спорт и отдых1'],['Обед комплексный','Питание3']];
@@ -19,7 +20,7 @@ function useReorderNotice(onReorder){
   observer.current.observe(node,{childList:true,subtree:true})}).current;
 }
 
-export default function MainPage({noServices=false,loadError=false,sections,setSections,onEdit,onSaved,onNotify,createDisabledHint}){
+export default function MainPage({noServices=false,loadError=false,showWidget=false,sections,setSections,onEdit,onSaved,onNotify,createDisabledHint}){
  const sortedNotice=()=>onNotify('Порядок сортировки изменен'),sectionsOrderRef=useReorderNotice(sortedNotice),feedOrderRef=useReorderNotice(sortedNotice);
  const [feed,setFeed]=useState(feedItems.map(([name,serviceId],i)=>({id:String(i),name,serviceId,visible:true})));
  const [details,setDetails]=useState(null);
@@ -38,7 +39,7 @@ export default function MainPage({noServices=false,loadError=false,sections,setS
  const title=(text,subtitle,actions)=><TileHeader text={text} subtitle={<Text text={subtitle} typography="promo-paragraph"/>} actions={actions}/>;
  return <>
   <main className="page">
-   <PageTop title="Настройки показа" subtitle={<div className="page-description"><Text text="Задайте структуру и наполнение витрины, чтобы помочь гостям найти нужную услугу" typography="subtitle"/><div className="page-secondary-actions"><StorefrontLink/></div></div>}/>
+   <PageTop title="Настройки показа" subtitle={<div className="page-description"><Text text="Задайте структуру и наполнение витрины, чтобы помочь гостям найти нужную услугу" typography="subtitle"/><div className="page-secondary-actions"><StorefrontLink/>{showWidget&&<SiteWidgetSettings onSaved={()=>onNotify('Настройки виджета сохранены')}/>}</div></div>}/>
    <div className="main-tile sections-tile" ref={sectionsOrderRef}><Tile header={title('Разделы','Кнопки навигации для быстрого перехода к предложениям на витрине',sections.length>0&&<Button icon="add" text="Создать раздел" disabled={Boolean(createDisabledHint)} disabledHint={createDisabledHint} onClick={()=>onEdit()}/>)}>
     <>{sections.length===1&&<div className="sections-warning" role="status"><WarningAlert
       text="Создайте не меньше 2 разделов, чтобы навигация появилась на витрине"

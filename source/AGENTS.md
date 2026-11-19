@@ -67,3 +67,8 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - After a successful drag-and-drop reorder in «Разделы» or «Лента всех услуг», show the green success SnackbarWindow «Порядок сортировки изменен». No banner when the drop leaves the order unchanged. Reactor Table has no drop callback, so MainPage detects the row move with a MutationObserver (useReorderNotice).
 
 - When all section icons are occupied (including hidden sections), disable «Создать раздел» and show the Reactor disabledHint «Достигнут лимит разделов. Удалите лишний или измените текущий». Preset section names must not reuse occupied icons through automatic pairing. Editing keeps the current icon available. The «Все иконки заняты» prototype variant provides this state for review.
+
+- Website widget settings: «Виджет для сайта» beside «Поделиться витриной» opens a 600 px Reactor sidebar «Настройка виджета». Include «Активация виджета на витрине» and «Расположение виджета на сайте» with four radio choices in a 2×2 grid (bottom right/left, middle right/left), matching the qatl.ru chat settings reference. Save applies the draft; cancel/close discard it.
+- «Виджет для сайта» is the primary action (Reactor Button type="primary"); «Поделиться витриной» keeps the default secondary style.
+- Prototype selector includes «С виджетом» with its own section data. Show the primary «Виджет для сайта» action and widget settings only in this variant; other variants retain the interface without the widget action.
+- Widget sidebar starts with a Reactor InfoAlert: «Цвет иконки будет соответствовать основному цвету формы бронирования.» above the activation switch.

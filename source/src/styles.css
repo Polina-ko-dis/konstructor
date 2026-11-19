@@ -40,7 +40,7 @@ html,body,#root{min-height:100%;margin:0}html,body{overflow-y:auto}#root{overflo
 
 .page-title-row{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.storefront-link-body{display:flex;flex-direction:column;gap:16px;min-width:0}
 
-.page-secondary-actions{display:flex;align-items:center;justify-content:flex-start}
+.page-secondary-actions{display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:wrap}
 .page-secondary-actions>a{white-space:nowrap;flex-shrink:0}
 
 .storefront-section{display:flex;flex-direction:column;gap:8px}.storefront-copy-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -77,3 +77,16 @@ html,body,#root{min-height:100%;margin:0}html,body{overflow-y:auto}#root{overflo
 
 /* Group filter on the left, search on the right. */
 .filters{justify-content:space-between}.filters-search{width:280px;flex-shrink:1;min-width:0}.group-filter-value{font-weight:400}@media(max-width:600px){.filters-search{width:100%}}
+
+/* Website widget positions match the chat settings reference. */
+.widget-settings-body{display:flex;flex-direction:column;gap:32px}
+.widget-position-section{display:flex;flex-direction:column;gap:16px}
+.widget-position-grid{display:grid;grid-template-columns:repeat(2,173px);gap:24px}
+.widget-position-option{display:flex;flex-direction:column;gap:8px;min-width:0}
+.widget-position-preview{position:relative;margin-left:28px;width:145px;height:97px;border-radius:8px;background:rgb(var(--REACTOR-color-background));cursor:pointer}
+.widget-position-marker{position:absolute;width:14px;height:14px;border-radius:50%;background:rgb(var(--REACTOR-color-neutral));bottom:8px}
+.widget-position-bottom-right .widget-position-marker,.widget-position-middle-right .widget-position-marker{right:8px}
+.widget-position-bottom-left .widget-position-marker,.widget-position-middle-left .widget-position-marker{left:8px}
+.widget-position-middle-right,.widget-position-middle-left{height:119px}
+.widget-position-middle-right .widget-position-marker,.widget-position-middle-left .widget-position-marker{top:50%;bottom:auto;transform:translateY(-50%)}
+@media(max-width:440px){.widget-position-grid{grid-template-columns:173px}}
