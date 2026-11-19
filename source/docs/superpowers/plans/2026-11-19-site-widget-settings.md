@@ -15,7 +15,7 @@
 - Work locally in konstructor/source; do not push before user approval.
 - Read source/AGENTS.md and connected Reactor docs before choosing controls.
 - Button «Виджет для сайта» beside «Поделиться витриной»; sidebar «Настройка виджета».
-- Switch «Активация виджета на витрине» and block «Расположение виджета на сайте».
+- Switch «Активация виджета витрины на сайте» and block «Расположение виджета на сайте».
 - Four positions in a 2×2 grid: bottom right/left, middle right/left.
 - Preserve existing section and sharing workflows and private npm configuration.
 
