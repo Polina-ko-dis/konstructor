@@ -70,7 +70,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 - Website widget settings: «Виджет для сайта» beside «Поделиться витриной» opens a 600 px Reactor sidebar «Настройка виджета». Include «Активация виджета витрины на сайте» and «Расположение виджета на сайте» with four radio choices in a 2×2 grid (bottom right/left, middle right/left), matching the qatl.ru chat settings reference. Save applies the draft; cancel/close discard it.
 - «Виджет для сайта» is the primary action (Reactor Button type="primary"); «Поделиться витриной» keeps the default secondary style.
-- Prototype selector includes «С виджетом» with its own section data. Show the primary «Виджет для сайта» action and widget settings only in this variant; other variants retain the interface without the widget action.
+- Prototype selector includes «Одиночный виджет» (the former «С виджетом») and «Группа виджетов», each with its own section data. Both show the primary «Виджет для сайта» action. The single widget keeps the existing settings; the group initially uses the same interface, to be revised separately later. Other variants retain the interface without the widget action.
 - Widget sidebar starts with a Reactor InfoAlert: «Цвет и стили виджета будут соответствовать стилям формы бронирования» above the activation switch.
 - Widget sidebar footer order: primary «Сохранить», secondary «Посмотреть на сайте», secondary «Отмена». Preview opens https://polina-ko-dis.github.io/widget-test/c/ in a new browser tab and keeps the sidebar and its draft open.
 - Sidebar close crosses have no tooltip. Use Reactor IconButton with the same cancel-filled icon and an accessible «Закрыть» label, avoiding CloseIcon's built-in hint.
