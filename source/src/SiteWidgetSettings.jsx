@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Button,InfoAlert,Label,Radio,Switch,Text} from '@reactor/reactor';
+import {Button,InfoAlert,InfoDialogWindow,Label,Radio,Switch,Text} from '@reactor/reactor';
 import SidebarWindow from './GuardedSidebar';
 import IconPickerSidebar from './IconPickerSidebar';
 import {widgetPictures,widgetIconDirectory,defaultWidgetIcon} from './widgetIcons';
@@ -11,20 +11,26 @@ const positionOptions=[
  {id:'bottom-right',text:'Внизу справа'}
 ];
 const sizes=[{id:'S',pixels:58},{id:'M',pixels:88},{id:'L',pixels:116}];
+const publishDialogSize=()=>({minWidth:600,maxWidth:600});
 
 export default function SiteWidgetSettings({onSaved,variant='single'}){
  const singleWidget=variant==='single';
  const positions=singleWidget?positionOptions:[...positionOptions].reverse();
  const [open,setOpen]=useState(false);
  const [picker,setPicker]=useState(false);
+ const [publishConfirm,setPublishConfirm]=useState(false);
  const [settings,setSettings]=useState({enabled:false,position:'bottom-right',icon:singleWidget?defaultWidgetIcon:'',size:'M'});
  const [draft,setDraft]=useState(settings);
  const trigger=useRef(null);
  const iconTrigger=useRef(null);
+ const saveTrigger=useRef(null);
  const returnToIcon=useRef(false);
+ const returnToSave=useRef(false);
  const body=useRef(null);
  const visible=useRef(false);
- const changeOpen=value=>{visible.current=value;if(value)setDraft(settings);else{setPicker(false);returnToIcon.current=false}setOpen(value);if(!value)requestAnimationFrame(()=>{if(!visible.current)trigger.current?.focus()})};
+ const changeOpen=value=>{visible.current=value;if(value)setDraft(settings);else{setPicker(false);setPublishConfirm(false);returnToIcon.current=false;returnToSave.current=false}setOpen(value);if(!value)requestAnimationFrame(()=>{if(!visible.current)trigger.current?.focus()})};
+ const previewLink={href:singleWidget?'https://polina-ko-dis.github.io/widget-test/d-solo/':'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'};
+ const saveSettings=()=>{setSettings({...draft});onSaved();changeOpen(false)};
  const appearanceText=singleWidget?'Цвет виджета будет соответствовать цвету кнопок с вашего Модуля бронирования Travelline. Отображение виджета на сайте можно проверить до сохранения.':'Цвет и стили виджета будут соответствовать стилям формы бронирования';
  // The installed Reactor sidebar does not move or contain focus itself.
  useEffect(()=>{
@@ -39,16 +45,19 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
   };
   const frame=requestAnimationFrame(()=>{
    if(!visible.current)return;
-   card=picker?document.querySelector('[tag="widget-icon-picker"]'):body.current?.closest('[tag="site-widget-settings"]');
+   // The installed DialogWindow does not forward tag to its card; locate it through our footer.
+   card=publishConfirm?document.querySelector('.widget-publish-actions')?.closest('[class*="_popup_"]'):picker?document.querySelector('[tag="widget-icon-picker"]'):body.current?.closest('[tag="site-widget-settings"]');
    if(!card)return;
-   card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label',picker?'Выберите иконку':'Настройка виджета');
-   const initialFocus=picker?(card.querySelector('[role="radio"][aria-checked="true"]')||card.querySelector('[role="radio"]')):returnToIcon.current?iconTrigger.current:card.querySelector('[role="switch"]');
+   if(publishConfirm)card.setAttribute('tag','widget-publish-confirmation');
+   card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-label',publishConfirm?'Публикация виджета':picker?'Выберите иконку':'Настройка виджета');
+   const initialFocus=publishConfirm?card.querySelector('.widget-publish-actions [tabindex="0"]'):picker?(card.querySelector('[role="radio"][aria-checked="true"]')||card.querySelector('[role="radio"]')):returnToSave.current?saveTrigger.current:returnToIcon.current?iconTrigger.current:card.querySelector('[role="switch"]');
    initialFocus?.focus();
    if(!picker)returnToIcon.current=false;
+   if(!publishConfirm)returnToSave.current=false;
    card.addEventListener('keydown',containFocus);
   });
   return()=>{cancelAnimationFrame(frame);card?.removeEventListener('keydown',containFocus)};
- },[open,picker]);
+ },[open,picker,publishConfirm]);
  const selectPosition=position=>setDraft(value=>({...value,position}));
  const navigatePositions=event=>{
   const step={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[event.key];
@@ -68,8 +77,8 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
   event.currentTarget.querySelectorAll('[role="radio"]')[index]?.focus();
  };
  return <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} shifted={picker} state={[open,changeOpen]} trigger={<Button ref={trigger} type="primary" text="Виджет для сайта"/>} footer={({close})=><div className="widget-settings-footer">
-  <Button type="primary" text="Сохранить" onClick={()=>{setSettings({...draft});onSaved();close()}}/>
-  <Button text="Посмотреть на сайте" link={{href:singleWidget?'https://polina-ko-dis.github.io/widget-test/d-solo/':'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'}}/>
+  <Button ref={saveTrigger} type="primary" text="Сохранить" onClick={singleWidget?()=>{returnToSave.current=true;setPublishConfirm(true)}:saveSettings}/>
+  <Button text="Посмотреть на сайте" link={previewLink}/>
   <Button text="Отмена" onClick={close}/>
  </div>}>
   <div className="widget-settings-body" ref={body}>
@@ -103,5 +112,10 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
    </section>
   </div>
   {picker&&<IconPickerSidebar tag="widget-icon-picker" width={600} infoText={appearanceText} imageDirectory={widgetIconDirectory} pictures={widgetPictures} value={draft.icon} onApply={icon=>{setDraft(value=>({...value,icon}));setPicker(false)}} onClose={()=>setPicker(false)}/>}
+  {singleWidget&&<InfoDialogWindow tag="widget-publish-confirmation" header="Публикация виджета" title="После сохранения виджет появится на сайте" size={publishDialogSize} trigger={<span/>} state={[publishConfirm,setPublishConfirm]} footer={<div className="unsaved-actions widget-publish-actions">
+   <Button type="primary" text="Сохранить и опубликовать" onClick={saveSettings}/>
+   <Button text="Проверить" onClick={()=>{window.open(previewLink.href,'_blank','noopener,noreferrer');setPublishConfirm(false)}}/>
+   <Button text="Закрыть" onClick={()=>setPublishConfirm(false)}/>
+  </div>}><Text text="Перед сохранением рекомендуем проверить расположение виджета на сайте и его взаимодействие со сторонними виджетами."/></InfoDialogWindow>}
  </SidebarWindow>;
 }
