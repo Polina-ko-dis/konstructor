@@ -23,7 +23,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 - Do not offer «Без картинки» or display «Не выбрано». Show «Выбрать» before selection and «Изменить» beside the selected illustration; no separate delete button. The picker contains 20 illustrations without visible captions.
 
-- Section unsaved-changes dialog: title «Сохранить изменения?», message «В разделе есть несохраненные данные», buttons «Сохранить» (validate, then save and close), «Не сохранять» (discard and close), and «Продолжить редактирование» (return to the form). «Сохранить» stays enabled even for invalid data. On validation failure, close only the confirmation, preserve all form data, show field errors and a summary, and focus/scroll to the first invalid control. Closing the confirmation via its cross or Escape also returns to editing. Applies to creation and editing.
+- Section unsaved-changes dialog: title «Сохранить изменения?», message «В разделе есть несохраненные данные», buttons «Сохранить» (validate, then save and close), «Не сохранять» (discard and close), and «Продолжить редактирование» (return to the form). «Сохранить» stays enabled even for invalid data. On validation failure, close only the confirmation, preserve all form data, show field errors without a summary alert, and focus/scroll to the first invalid control. Closing the confirmation via its cross or Escape also returns to editing. Applies to creation and editing.
 
 - Main page provides «Ссылка на витрину» for viewing/copying the whole guest storefront URL. Keep it separate from the designer URL. Configure via VITE_STOREFRONT_URL; keep the example address until a real guest URL is supplied; per user request, do not display the prototype/address-not-connected caption. Section-specific links are future scope.
 
@@ -41,7 +41,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 - With 2 or more sections, keep the original section subtitle «Кнопки быстрого перехода к предложениям на витрине» without the minimum-count reminder.
 
-- Show the section save-validation summary («Не удалось создать раздел. Исправьте ошибки в форме») in a Reactor DangerAlert above the fields.
+- Disable the main section create/save action while any field validation error is active. Show validation messages beside their fields only; do not render a general red save-validation alert above the form.
 
 - Added section services can be reordered using drag handles or arrow keys on the «Добавленные» tab. Persist the order in section.ids; filtered reorder changes visible slots only. Reordering is an unsaved change and must survive saving/reopening.
 
@@ -63,6 +63,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Section presets, icon ids and section↔icon pairs follow Figma «Для конструктора» (18587:88986): icon file/id = Figma layer name (e.g. Food_Icon_dark), section preset = white caption under the icon; «Без названия» means the icon has no paired section.
 
 - Default modal width is always 600 px. Use this width for all modal dialogs unless the user explicitly requests another width.
+- Custom «Название раздела» has a 20-character limit. Show the Reactor danger state and the standard Reactor text «Введите не более 20 символов» while typing above the limit, clear the length error immediately on correction, and reject overlong names through both save actions.
 
 - After a successful drag-and-drop reorder in «Разделы» or «Лента всех услуг», show the green success SnackbarWindow «Порядок сортировки изменен». No banner when the drop leaves the order unchanged. Reactor Table has no drop callback, so MainPage detects the row move with a MutationObserver (useReorderNotice).
 
