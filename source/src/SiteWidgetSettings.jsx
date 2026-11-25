@@ -1,21 +1,23 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Button,InfoAlert,Radio,Switch,Text} from '@reactor/reactor';
+import {Button,InfoAlert,Label,Radio,Switch,Text} from '@reactor/reactor';
 import SidebarWindow from './GuardedSidebar';
 import IconPickerSidebar from './IconPickerSidebar';
 import {pictures} from './data';
 
-const positions=[
- {id:'bottom-right',text:'Внизу справа'},
- {id:'bottom-left',text:'Внизу слева'},
+const positionOptions=[
+ {id:'middle-left',text:'По середине слева'},
  {id:'middle-right',text:'По середине справа'},
- {id:'middle-left',text:'По середине слева'}
+ {id:'bottom-left',text:'Внизу слева'},
+ {id:'bottom-right',text:'Внизу справа'}
 ];
+const sizes=[{id:'S',pixels:58},{id:'M',pixels:88},{id:'L',pixels:116}];
 
 export default function SiteWidgetSettings({onSaved,variant='single'}){
  const singleWidget=variant==='single';
+ const positions=singleWidget?positionOptions:[...positionOptions].reverse();
  const [open,setOpen]=useState(false);
  const [picker,setPicker]=useState(false);
- const [settings,setSettings]=useState({enabled:false,position:'bottom-right',icon:''});
+ const [settings,setSettings]=useState({enabled:false,position:'bottom-right',icon:'',size:'M'});
  const [draft,setDraft]=useState(settings);
  const trigger=useRef(null);
  const iconTrigger=useRef(null);
@@ -23,7 +25,7 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
  const body=useRef(null);
  const visible=useRef(false);
  const changeOpen=value=>{visible.current=value;if(value)setDraft(settings);else{setPicker(false);returnToIcon.current=false}setOpen(value);if(!value)requestAnimationFrame(()=>{if(!visible.current)trigger.current?.focus()})};
- const appearanceText=singleWidget?'Цвет и стили виджета будут соответствовать стилям Модуля бронирования Travelline':'Цвет и стили виджета будут соответствовать стилям формы бронирования';
+ const appearanceText=singleWidget?'Цвет виджета будет соответствовать цвету кнопок с вашего Модуля бронирования Travelline. Отображение виджета на сайте можно проверить до сохранения.':'Цвет и стили виджета будут соответствовать стилям формы бронирования';
  // The installed Reactor sidebar does not move or contain focus itself.
  useEffect(()=>{
   if(!open)return;
@@ -56,19 +58,38 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
   selectPosition(positions[index].id);
   event.currentTarget.querySelectorAll('[role="radio"]')[index]?.focus();
  };
+ const selectSize=size=>setDraft(value=>({...value,size}));
+ const navigateSizes=event=>{
+  const step={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[event.key];
+  if(step===undefined&&event.key!=='Home'&&event.key!=='End')return;
+  event.preventDefault();
+  const index=event.key==='Home'?0:event.key==='End'?sizes.length-1:(sizes.findIndex(size=>size.id===draft.size)+step+sizes.length)%sizes.length;
+  selectSize(sizes[index].id);
+  event.currentTarget.querySelectorAll('[role="radio"]')[index]?.focus();
+ };
  return <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} shifted={picker} state={[open,changeOpen]} trigger={<Button ref={trigger} type="primary" text="Виджет для сайта"/>} footer={({close})=><div className="widget-settings-footer">
   <Button type="primary" text="Сохранить" onClick={()=>{setSettings({...draft});onSaved();close()}}/>
   <Button text="Посмотреть на сайте" link={{href:'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'}}/>
   <Button text="Отмена" onClick={close}/>
  </div>}>
   <div className="widget-settings-body" ref={body}>
-   <InfoAlert text={appearanceText}/>
-   <Switch accent={draft.enabled} label="Активация виджета витрины на сайте" aria-label="Активация виджета витрины на сайте" role="switch" aria-checked={draft.enabled} value={draft.enabled} onChange={enabled=>setDraft(value=>({...value,enabled}))}/>
-   {singleWidget&&<section className="widget-position-section" aria-labelledby="widget-icon-heading">
-    <div id="widget-icon-heading"><Text text="Иконка виджета" typography="subtitle"/></div>
-    <div className="illustration-field">
-     {draft.icon&&<img className="chosen-picture" src={import.meta.env.BASE_URL+'assets/section-icons/'+draft.icon+'.svg'} alt={pictures.find(([id])=>id===draft.icon)?.[1]}/>}
-     <Button ref={iconTrigger} type="link" text={draft.icon?'Изменить':'Выбрать'} onClick={()=>{returnToIcon.current=true;setPicker(true)}}/>
+   {!singleWidget&&<InfoAlert text={appearanceText}/>}
+   <Switch accent={singleWidget||draft.enabled} label="Активация виджета витрины на сайте" aria-label="Активация виджета витрины на сайте" role="switch" aria-checked={draft.enabled} value={draft.enabled} onChange={enabled=>setDraft(value=>({...value,enabled}))}/>
+   {singleWidget&&<section className="widget-position-section" aria-labelledby="widget-appearance-heading">
+    <div id="widget-appearance-heading"><Text text="Вид виджета" typography="subtitle"/></div>
+    <InfoAlert text={appearanceText}/>
+    <div className="form-row">
+     <Label text="Иконка"/>
+     <div className="illustration-field">
+      {draft.icon&&<img className="chosen-picture" src={import.meta.env.BASE_URL+'assets/section-icons/'+draft.icon+'.svg'} alt={pictures.find(([id])=>id===draft.icon)?.[1]}/>}
+      <Button ref={iconTrigger} type="link" text={draft.icon?'Изменить':'Выбрать'} onClick={()=>{returnToIcon.current=true;setPicker(true)}}/>
+     </div>
+    </div>
+    <div className="form-row widget-size-row">
+     <div id="widget-size-label"><Label text="Размер"/></div>
+     <div className="widget-size-options" role="radiogroup" aria-labelledby="widget-size-label" onKeyDown={navigateSizes}>
+      {sizes.map(size=><Radio key={size.id} label={`${size.id} (${size.pixels} px)`} aria-label={`${size.id} (${size.pixels} px)`} role="radio" aria-checked={draft.size===size.id} tabIndex={draft.size===size.id?0:-1} value={draft.size===size.id} onChange={()=>selectSize(size.id)}/>)}
+     </div>
     </div>
    </section>}
    <section className="widget-position-section" aria-labelledby="widget-position-heading">
@@ -76,7 +97,7 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
     <div className="widget-position-grid" role="radiogroup" aria-labelledby="widget-position-heading" onKeyDown={navigatePositions}>
      {positions.map(position=><div className="widget-position-option" key={position.id}>
       <Radio label={position.text} aria-label={position.text} role="radio" aria-checked={draft.position===position.id} tabIndex={draft.position===position.id?0:-1} value={draft.position===position.id} onChange={()=>selectPosition(position.id)}/>
-      <div className={'widget-position-preview widget-position-'+position.id} aria-hidden="true" onClick={()=>selectPosition(position.id)}><span className="widget-position-marker"/></div>
+      <div className={'widget-position-preview widget-position-'+position.id+(singleWidget?' widget-position-preview-static':'')} aria-hidden="true" onClick={singleWidget?undefined:()=>selectPosition(position.id)}><span className="widget-position-marker"/></div>
      </div>)}
     </div>
    </section>
