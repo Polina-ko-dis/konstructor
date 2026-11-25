@@ -102,6 +102,6 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
     </div>
    </section>
   </div>
-  {picker&&<IconPickerSidebar tag="widget-icon-picker" infoText={appearanceText} imageDirectory={widgetIconDirectory} pictures={widgetPictures} value={draft.icon} onApply={icon=>{setDraft(value=>({...value,icon}));setPicker(false)}} onClose={()=>setPicker(false)}/>}
+  {picker&&<IconPickerSidebar tag="widget-icon-picker" width={600} infoText={appearanceText} imageDirectory={widgetIconDirectory} pictures={widgetPictures} value={draft.icon} onApply={icon=>{setDraft(value=>({...value,icon}));setPicker(false)}} onClose={()=>setPicker(false)}/>}
  </SidebarWindow>;
 }
