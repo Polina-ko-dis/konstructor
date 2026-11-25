@@ -89,11 +89,17 @@ html,body,#root{min-height:100%;margin:0}html,body{overflow-y:auto}#root{overflo
 .widget-size-options{display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px}
 .widget-position-grid{display:grid;grid-template-columns:repeat(2,173px);gap:24px}
 .widget-position-option{display:flex;flex-direction:column;gap:8px;min-width:0}
-.widget-position-preview{position:relative;margin-left:28px;width:145px;height:97px;border-radius:8px;background:rgb(var(--REACTOR-color-background));cursor:pointer}
+.widget-position-option-selectable{cursor:pointer}
+.widget-position-preview{position:relative;margin-left:28px;width:145px;height:119px;overflow:hidden;border-radius:8px;background:rgb(var(--REACTOR-color-background));cursor:pointer}
+.widget-position-site-header,.widget-position-site-banner,.widget-position-site-cards>span{position:absolute;background:rgb(var(--REACTOR-color-neutral)/15%)}
+.widget-position-site-header{left:10px;right:10px;top:9.2437%;height:5.8824%;border-radius:3.5px}
+.widget-position-site-banner{left:10px;right:10px;top:25.2101%;height:50.4202%;border-radius:3px}
+.widget-position-site-cards{position:absolute;left:10px;right:10px;top:85.7143%;height:15.9664%;display:flex;gap:10px}
+.widget-position-site-cards>span{position:relative;flex:1;border-radius:2px}
 .widget-position-preview-static{cursor:default}
-.widget-position-marker{position:absolute;width:14px;height:14px;border-radius:50%;background:rgb(var(--REACTOR-color-neutral));bottom:8px}
+.widget-position-grid-group .widget-position-preview{margin-left:0}
+.widget-position-marker{position:absolute;z-index:1;width:18px;height:18px;border-radius:50%;background:rgb(var(--REACTOR-color-neutral));bottom:8px}
 .widget-position-bottom-right .widget-position-marker,.widget-position-middle-right .widget-position-marker{right:8px}
 .widget-position-bottom-left .widget-position-marker,.widget-position-middle-left .widget-position-marker{left:8px}
-.widget-position-middle-right,.widget-position-middle-left{height:119px}
 .widget-position-middle-right .widget-position-marker,.widget-position-middle-left .widget-position-marker{top:50%;bottom:auto;transform:translateY(-50%)}
 @media(max-width:440px){.widget-position-grid{grid-template-columns:173px}}
