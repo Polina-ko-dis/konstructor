@@ -2,7 +2,7 @@ import React,{useEffect,useRef,useState} from 'react';
 import {Button,InfoAlert,Label,Radio,Switch,Text} from '@reactor/reactor';
 import SidebarWindow from './GuardedSidebar';
 import IconPickerSidebar from './IconPickerSidebar';
-import {pictures} from './data';
+import {widgetPictures,widgetIconDirectory,defaultWidgetIcon} from './widgetIcons';
 
 const positionOptions=[
  {id:'middle-left',text:'По середине слева'},
@@ -17,7 +17,7 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
  const positions=singleWidget?positionOptions:[...positionOptions].reverse();
  const [open,setOpen]=useState(false);
  const [picker,setPicker]=useState(false);
- const [settings,setSettings]=useState({enabled:false,position:'bottom-right',icon:'',size:'M'});
+ const [settings,setSettings]=useState({enabled:false,position:'bottom-right',icon:singleWidget?defaultWidgetIcon:'',size:'M'});
  const [draft,setDraft]=useState(settings);
  const trigger=useRef(null);
  const iconTrigger=useRef(null);
@@ -69,7 +69,7 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
  };
  return <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} shifted={picker} state={[open,changeOpen]} trigger={<Button ref={trigger} type="primary" text="Виджет для сайта"/>} footer={({close})=><div className="widget-settings-footer">
   <Button type="primary" text="Сохранить" onClick={()=>{setSettings({...draft});onSaved();close()}}/>
-  <Button text="Посмотреть на сайте" link={{href:'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'}}/>
+  <Button text="Посмотреть на сайте" link={{href:singleWidget?'https://polina-ko-dis.github.io/widget-test/d-solo/':'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'}}/>
   <Button text="Отмена" onClick={close}/>
  </div>}>
   <div className="widget-settings-body" ref={body}>
@@ -81,7 +81,7 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
     <div className="form-row">
      <Label text="Иконка"/>
      <div className="illustration-field">
-      {draft.icon&&<img className="chosen-picture" src={import.meta.env.BASE_URL+'assets/section-icons/'+draft.icon+'.svg'} alt={pictures.find(([id])=>id===draft.icon)?.[1]}/>}
+      {draft.icon&&<img className="chosen-picture" src={import.meta.env.BASE_URL+widgetIconDirectory+'/'+draft.icon+'.svg'} alt={widgetPictures.find(([id])=>id===draft.icon)?.[1]}/>}
       <Button ref={iconTrigger} type="link" text={draft.icon?'Изменить':'Выбрать'} onClick={()=>{returnToIcon.current=true;setPicker(true)}}/>
      </div>
     </div>
@@ -102,6 +102,6 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
     </div>
    </section>
   </div>
-  {picker&&<IconPickerSidebar tag="widget-icon-picker" infoText={appearanceText} pictures={pictures} value={draft.icon} onApply={icon=>{setDraft(value=>({...value,icon}));setPicker(false)}} onClose={()=>setPicker(false)}/>}
+  {picker&&<IconPickerSidebar tag="widget-icon-picker" infoText={appearanceText} imageDirectory={widgetIconDirectory} pictures={widgetPictures} value={draft.icon} onApply={icon=>{setDraft(value=>({...value,icon}));setPicker(false)}} onClose={()=>setPicker(false)}/>}
  </SidebarWindow>;
 }

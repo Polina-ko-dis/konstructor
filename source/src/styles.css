@@ -74,6 +74,7 @@ html,body,#root{min-height:100%;margin:0}html,body{overflow-y:auto}#root{overflo
 .sidebar-overlay-nested{background:transparent}
 
 .icon-picker-body{display:flex;flex-direction:column;gap:24px}
+[tag="widget-icon-picker"] .picture-option{gap:0}
 
 /* Group filter on the left, search on the right. */
 .filters{justify-content:space-between}.filters-search{width:280px;flex-shrink:1;min-width:0}.group-filter-value{font-weight:400}@media(max-width:600px){.filters-search{width:100%}}
