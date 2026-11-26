@@ -139,7 +139,7 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
   </SidebarWindow>
   <DialogWindow type={deactivating?'warning':'info'} tag={deactivating?'widget-deactivation-confirmation':'widget-activation-confirmation'} header={confirmationHeader} title={deactivating?'Деактивировать виджет?':'Активировать виджет?'} size={displayDialogSize} trigger={<span/>} state={[displayConfirmOpen,value=>{if(!value)closeDisplayConfirmation()}]} footer={<div className="unsaved-actions widget-display-confirmation-actions">
    <Button type="primary" text={deactivating?'Деактивировать':'Активировать и опубликовать'} onClick={()=>{setEnabled(!deactivating);onSaved();closeDisplayConfirmation()}}/>
-   {!deactivating&&<Button text="Проверить" disabled={!hasSaved} disabledHint={previewDisabledHint} onClick={()=>{if(hasSaved){window.open(previewLink.href,'_blank','noopener,noreferrer');closeDisplayConfirmation()}}}/>}
+   {!deactivating&&<Button text="Проверить" onClick={()=>{window.open(previewLink.href,'_blank','noopener,noreferrer');closeDisplayConfirmation()}}/>}
    <Button text="Закрыть" onClick={closeDisplayConfirmation}/>
   </div>}><Text text={deactivating?'После деактивации виджет витрины пропадёт с сайта.':'Активируйте виджет, чтобы гости могли открывать витрину с вашего сайта. Перед активацией рекомендуем проверить, как виджет отображается на сайте, и убедиться, что другие виджеты его не перекрывают.'}/></DialogWindow>
  </div>;
