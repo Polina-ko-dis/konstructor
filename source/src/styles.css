@@ -82,6 +82,8 @@ html,body,#root{min-height:100%;margin:0}html,body{overflow-y:auto}#root{overflo
 /* Website widget positions match the chat settings reference. */
 .widget-display-card{display:flex;flex-direction:column;width:100%;min-width:0;align-self:stretch}
 .widget-display-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.widget-display-summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.widget-display-controls{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto}
 .widget-settings-body{display:flex;flex-direction:column;gap:32px}
 /* Compensate for the widget SVG's inner padding to align its visible edge with the size radios. */
 .widget-settings-body .chosen-picture{transform:translateX(-5px)}

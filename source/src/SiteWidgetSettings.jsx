@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Button,DialogWindow,InfoAlert,Label,Radio,Row,Switch,Text,Tile} from '@reactor/reactor';
+import {Badge,Button,DialogWindow,InfoAlert,Label,Radio,Row,Text,Tile} from '@reactor/reactor';
 import SidebarWindow from './GuardedSidebar';
 import IconPickerSidebar from './IconPickerSidebar';
 import {widgetPictures,widgetIconDirectory,defaultWidgetIcon} from './widgetIcons';
@@ -87,11 +87,18 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
   selectSize(sizes[index].id);
   event.currentTarget.querySelectorAll('[role="radio"]')[index]?.focus();
  };
- return <div className="widget-display-card" role="group" aria-label="Отображение виджета на сайте">
+ return <div className="widget-display-card" role="group" aria-label="Виджет витрины на сайте">
   <Tile>
    <div className="widget-display-actions">
-    <Switch refs={{input:node=>{activationTrigger.current=node}}} accent label="Показывать виджет витрины на сайте" aria-label="Показывать виджет витрины на сайте" role="switch" aria-checked={enabled} value={enabled} onChange={changeEnabled}/>
-    <Button ref={trigger} type="link" icon="settings" text="Настроить виджет" onClick={()=>changeOpen(true)}/>
+    <div className="widget-display-summary">
+     <div role="status"><Badge filled color={enabled?'success':'neutral'} text={enabled?'Активирован':'Не активирован'}/></div>
+     <Text text="Виджет витрины на сайте"/>
+    </div>
+    <div className="widget-display-controls">
+     <Button ref={activationTrigger} text={enabled?'Деактивировать':'Активировать'} onClick={()=>changeEnabled(!enabled)}/>
+     <Button icon="eye" aria-label="Посмотреть виджет на сайте" hint="Посмотреть виджет на сайте" link={previewLink}/>
+     <Button ref={trigger} icon="settings" role="button" aria-label="Настройки виджета" hint="Настройки виджета" onClick={()=>changeOpen(true)}/>
+    </div>
    </div>
   </Tile>
   <SidebarWindow tag="site-widget-settings" header="Настройка виджета" width={600} shifted={picker} state={[open,changeOpen]} trigger={<span/>} footer={({close})=><div className="widget-settings-footer">
