@@ -80,6 +80,8 @@ html,body,#root{min-height:100%;margin:0}html,body{overflow-y:auto}#root{overflo
 .filters{justify-content:space-between}.filters-search{width:280px;flex-shrink:1;min-width:0}.group-filter-value{font-weight:400}@media(max-width:600px){.filters-search{width:100%}}
 
 /* Website widget positions match the chat settings reference. */
+.widget-display-card{display:flex;flex-direction:column;width:100%;min-width:0;align-self:stretch}
+.widget-display-actions{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .widget-settings-body{display:flex;flex-direction:column;gap:32px}
 /* Compensate for the widget SVG's inner padding to align its visible edge with the size radios. */
 .widget-settings-body .chosen-picture{transform:translateX(-5px)}

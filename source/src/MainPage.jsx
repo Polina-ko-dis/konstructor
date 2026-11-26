@@ -39,7 +39,8 @@ export default function MainPage({noServices=false,loadError=false,showWidget=fa
  const title=(text,subtitle,actions)=><TileHeader text={text} subtitle={<Text text={subtitle} typography="promo-paragraph"/>} actions={actions}/>;
  return <>
   <main className="page">
-   <PageTop title="Настройки показа" subtitle={<div className="page-description"><Text text="Задайте структуру и наполнение витрины, чтобы помочь гостям найти нужную услугу" typography="subtitle"/><div className="page-secondary-actions"><StorefrontLink/>{showWidget&&<SiteWidgetSettings key={widgetVariant} variant={widgetVariant} onSaved={()=>onNotify('Настройки виджета сохранены')}/>}</div></div>}/>
+   <PageTop title="Настройки показа" subtitle={<div className="page-description"><Text text="Задайте структуру и наполнение витрины, чтобы помочь гостям найти нужную услугу" typography="subtitle"/><div className="page-secondary-actions"><StorefrontLink/></div></div>}/>
+   {showWidget&&<SiteWidgetSettings key={widgetVariant} variant={widgetVariant} onSaved={()=>onNotify('Настройки виджета сохранены')}/>}
    <div className="main-tile sections-tile" ref={sectionsOrderRef}><Tile header={title('Разделы','Кнопки навигации для быстрого перехода к предложениям на витрине',sections.length>0&&<Button icon="add" text="Создать раздел" disabled={Boolean(createDisabledHint)} disabledHint={createDisabledHint} onClick={()=>onEdit()}/>)}>
     <>{sections.length===1&&<div className="sections-warning" role="status"><WarningAlert
       text="Создайте не меньше 2 разделов, чтобы навигация появилась на витрине"
