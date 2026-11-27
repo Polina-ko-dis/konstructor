@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {Badge,Button,DialogWindow,InfoAlert,Label,Radio,Row,Text,Tile} from '@reactor/reactor';
+import {Badge,Button,DialogWindow,Field,InfoAlert,Label,Radio,Row,Text,Tile} from '@reactor/reactor';
 import SidebarWindow from './GuardedSidebar';
 import IconPickerSidebar from './IconPickerSidebar';
 import {widgetPictures,widgetIconDirectory,defaultWidgetIcon} from './widgetIcons';
@@ -11,6 +11,7 @@ const positionOptions=[
  {id:'bottom-right',text:'Справа внизу'}
 ];
 const sizes=[{id:'S'},{id:'M'},{id:'L'}];
+const MAX_WIDGET_TEXT_LENGTH=45;
 const displayDialogSize=()=>({minWidth:600,maxWidth:600});
 const chatSettingsUrl='https://www.qatl.ru/app/AiChatExtranet/#/opportunity/AiChatManagement/';
 
@@ -24,10 +25,11 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
  const deactivating=displayConfirmation==='deactivate';
  const confirmationHeader=deactivating?'Деактивация виджета':'Активация виджета';
  const [enabled,setEnabled]=useState(false);
- const [settings,setSettings]=useState({position:'middle-right',icon:defaultWidgetIcon,size:'M'});
+ const [settings,setSettings]=useState({position:'bottom-right',icon:defaultWidgetIcon,size:'M',text:'Услуги для вашего проживания'});
  const [draft,setDraft]=useState(settings);
+ const textLengthError=Array.from(draft.text).length>MAX_WIDGET_TEXT_LENGTH?`Введите не более ${MAX_WIDGET_TEXT_LENGTH} символов`:'';
  const [hasSaved,setHasSaved]=useState(false);
- const canPreview=hasSaved&&draft.icon===settings.icon&&draft.size===settings.size&&draft.position===settings.position;
+ const canPreview=hasSaved&&draft.icon===settings.icon&&draft.size===settings.size&&draft.position===settings.position&&draft.text===settings.text;
  const previewDisabledHint='Сохраните изменения перед просмотром';
  const trigger=useRef(null);
  const activationTrigger=useRef(null);
@@ -37,7 +39,8 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
  const visible=useRef(false);
  const changeOpen=value=>{visible.current=value;if(value)setDraft(settings);else{setPicker(false);setDisplayConfirmation(null);returnToControl.current=null}setOpen(value);if(!value)requestAnimationFrame(()=>{if(!visible.current)trigger.current?.focus()})};
  const previewLink={href:singleWidget?'https://polina-ko-dis.github.io/widget-test/d-solo/':'https://polina-ko-dis.github.io/widget-test/c/',target:'_blank',rel:'noopener noreferrer'};
- const saveSettings=()=>{setSettings({...draft});setHasSaved(true);onSaved()};
+ const saveSettings=()=>{if(textLengthError)return;setSettings({...draft});setHasSaved(true);onSaved()};
+ const labelTextInput=node=>{if(!node)return;node.setAttribute('aria-label','Текст виджета');node.setAttribute('aria-invalid',String(Boolean(textLengthError)));if(textLengthError)node.setAttribute('aria-describedby','widget-text-error');else node.removeAttribute('aria-describedby')};
  const changeEnabled=value=>{returnToControl.current=activationTrigger.current;setDisplayConfirmation(value?'activate':'deactivate')};
  const closeDisplayConfirmation=()=>setDisplayConfirmation(null);
  const appearanceText='Цвет виджета будет соответствовать цвету кнопок с вашего Модуля бронирования Travelline. Отображение виджета на сайте можно проверить после сохранения настроек.';
@@ -109,6 +112,13 @@ export default function SiteWidgetSettings({onSaved,variant='single'}){
   <div className="widget-settings-body" ref={body}>
    <section className="widget-position-section" aria-labelledby="widget-appearance-heading">
     <div id="widget-appearance-heading"><Text text="Вид виджета" typography="subtitle"/></div>
+    <div className="form-row">
+     <Label text="Текст виджета"/>
+     <div className="name-field">
+      <Field size="stretch" state={textLengthError?'danger':undefined} refs={{input:labelTextInput}} value={draft.text} onChange={text=>setDraft(value=>({...value,text}))}/>
+      {textLengthError&&<div id="widget-text-error" role="alert"><Text text={textLengthError} typography="caption" color="danger"/></div>}
+     </div>
+    </div>
     <div className="form-row">
      <Label text="Иконка"/>
      <div className="illustration-field">
